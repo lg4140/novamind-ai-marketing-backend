@@ -1,0 +1,7 @@
+email,firstname,lastname,company,persona_segment,marketing_consent
+amy@example.test,Amy,Chen,Bright Studio,ops_lead,true
+leo@example.test,Leo,Park,Canvas Agency,creative_director,true
+mia@example.test,Mia,Lo,Solo Atelier,freelancer,true
+noah@example.test,Noah,Kim,Flow Works,ops_lead,false
+sophie@example.test,Sophie,Wu,Craft Lab,creative_director,true
+ava@example.test,Ava,Lin,Indie Frame,freelancer,true

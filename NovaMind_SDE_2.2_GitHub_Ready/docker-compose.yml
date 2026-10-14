@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: novamind
+      POSTGRES_USER: novamind
+      POSTGRES_PASSWORD: localdevpassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novamind"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    volumes: ["dbdata:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 12
+  migrate:
+    build: .
+    command: ["alembic", "upgrade", "head"]
+    environment: &common
+      DATABASE_URL: postgresql+psycopg://novamind:localdevpassword@postgres:5432/novamind
+      DATABASE_AUTO_CREATE: "false"
+      APP_ENV: development
+      API_TOKEN: dev-only-change-me
+      AI_PROVIDER: mock
+      CRM_PROVIDER: mock
+      QUEUE_MODE: celery
+      REDIS_URL: redis://redis:6379/0
+      ALLOW_DEMO_EVENTS: "true"
+    depends_on:
+      postgres: {condition: service_healthy}
+  api:
+    build: .
+    ports: ["127.0.0.1:8000:8000"]
+    environment: *common
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  worker:
+    build: .
+    command: ["celery", "-A", "app.workers.tasks.celery_app", "worker", "--loglevel=info", "--concurrency=2"]
+    environment: *common
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  dispatcher:
+    restart: unless-stopped
+    build: .
+    command: ["python", "-m", "app.cli", "dispatch-outbox", "--loop"]
+    environment: *common
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  recovery:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-m", "app.cli", "recover-stale", "--loop"]
+    environment: *common
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
+volumes:
+  dbdata:
