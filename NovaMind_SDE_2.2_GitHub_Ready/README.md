@@ -95,9 +95,6 @@ Dockerfile, docker-compose.yml, pyproject.toml, .env.example
 
 [Architecture](docs/architecture.md) · [API reference](docs/api.md) · [Reliability design](docs/reliability_design.md) · [Schema migration](docs/migration_0003.md) · [Testing](docs/validation_v22.md) · [Security](SECURITY.md) · [Roadmap](docs/roadmap_v23.md) · [Changelog](CHANGELOG.md)
 
-**中文 GitHub 上传指南：** [docs/GITHUB_UPLOAD_GUIDE_zh.md](docs/GITHUB_UPLOAD_GUIDE_zh.md)
-
-**Engineering report:** [NovaMind SDE 2.2 — engineering upgrade and verification (DOCX)](docs/NovaMind_SDE_2.2_工程升级与验证报告.docx).
 
 ## Data, publishing, and license notes
 
